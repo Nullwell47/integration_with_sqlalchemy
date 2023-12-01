@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import func
 from sqlalchemy import select
 from sqlalchemy import inspect
 from sqlalchemy import Column
@@ -98,3 +99,26 @@ stmt_address = select(Adress).where(Adress.user_id.in_([2]))
 print('\nRecuperando os endereços de e-mail de coelho: ')
 for adress in session.scalars(stmt_address):
     print(adress)
+
+
+stmt_order = select(User).order_by(User.fullname.desc())
+print("\nRecuperando info de maneira ordenada")
+for result in session.scalars(stmt_order):
+    print(result)
+
+stmt_join = select(User.fullname, Adress.email_adress).join_from(Adress, User)
+for result in session.scalars(stmt_join):
+    print(result)
+
+# print(select(User.fullname, Adress.email_adress).join_from(Adress, User))
+
+connection = engine.connect()
+results = connection.execute(stmt_join).fetchall()
+print("\nExecutando statement a partir da connection")
+for result in results:
+    print(result)
+
+stmt_count = select(func.count('*')).select_from(User)
+print("\nTotal de instâncias em User")
+for result in session.scalars(stmt_count):
+    print(result)
