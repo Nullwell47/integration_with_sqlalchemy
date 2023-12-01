@@ -100,24 +100,27 @@ print('\nRecuperando os endereços de e-mail de coelho: ')
 for adress in session.scalars(stmt_address):
     print(adress)
 
-
+# Criando uma declaração para selecionar todos os usuários ordenados pelo nome completo em ordem decrescente
 stmt_order = select(User).order_by(User.fullname.desc())
 print("\nRecuperando info de maneira ordenada")
 for result in session.scalars(stmt_order):
     print(result)
 
+# Criando uma declaração para selecionar o nome completo do usuário e o endereço de e-mail usando join entre User e Address
 stmt_join = select(User.fullname, Adress.email_adress).join_from(Adress, User)
 for result in session.scalars(stmt_join):
     print(result)
 
 # print(select(User.fullname, Adress.email_adress).join_from(Adress, User))
 
+# Conexão ao banco de dados usando engine.connect() e execução da declaração stmt_join
 connection = engine.connect()
 results = connection.execute(stmt_join).fetchall()
 print("\nExecutando statement a partir da connection")
 for result in results:
     print(result)
 
+# Criando uma declaração para contar o número total de instâncias na tabela User
 stmt_count = select(func.count('*')).select_from(User)
 print("\nTotal de instâncias em User")
 for result in session.scalars(stmt_count):
